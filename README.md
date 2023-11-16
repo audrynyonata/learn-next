@@ -80,15 +80,13 @@ Production Mode: support SSG, ISR, SSR rendering strategy
 4. May need client feature detection in server (ex: localStorage, window, etc.) and `suppressHydrationWarning` props (ex: different text in DOM element)
 
 ## Data Fetching Options
-
-|     |                                 |                                              |                                                                                                        |
+|     |                                 |                                              | |
 | --- | ------------------------------- | -------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
-| 1a  | Static Generation               | getStaticProps                               | - Data fetched on server at build time <br> - Never updated                                            |
-| 1b  | Incremental Static Regeneration | getStaticProps + revalidate                  | - Data fetched on server at build time <br> - Updated every ${revalidate} seconds or on webhooks event |
-| 1c  | Server-side Rendering           | getServerSideProps                           | - Data fetched on server at runtime <br> - Updated at every request                                    |
-| 2a  | Client-side                     | on component mount / useEffect               | - Data fetched on client <br> - Updated at every request                                               |
-| 2b  | Client-side + API route         | on component mount / useEffect + API handler | - Data fetched on client <br> - Updated at every request                                               |
-|     |                                 |                                              |                                                                                                        |
+| **1a**  | Static Generation               | getStaticProps                               | - Data fetched on server at build time <br> - Never updated                                            |
+| **1b**  | Incremental Static Regeneration | getStaticProps + revalidate                  | - Data fetched on server at build time <br> - Updated every ${revalidate} seconds or on webhooks event |
+| **1c**  | Server-side Rendering           | getServerSideProps                           | - Data fetched on server at runtime <br> - Updated at every request                                    |
+| **2a**  | Client-side                     | on component mount / useEffect               | - Data fetched on client <br> - Updated at every request                                               |
+| **2b**  | Client-side + API route         | on component mount / useEffect + API handler | - Data fetched on client <br> - Updated at every request                                               |
 
 0\. Static: HTML + JS + assets, React components without getStaticProps
 
@@ -209,7 +207,7 @@ P.S. :
 | Static host                   | Static export only             | Firebase, Amazon S3, Google Cloud Storage                                                       | Upload exported html assets via sftp                                                                                                                  |
 | Run on web server             | Static export only             | nginx, caddy                                                                                    | Build & serve<br><br> npm run build<br> npx next export -o dist // no longer work in Next v14. export distDir in nextConfig instead<br>npx serve dist |
 
-P.S. : Statically built & exported website (output: 'export'): means no SSR / ISR, no revalidate, `fallback: 'blocking' / true` is not supported.
+P.S. : Statically built & exported website (output: 'export'): means no SSR / ISR, no revalidate, no image optimization, and `fallback: 'blocking' / true` is not supported.
 
 ## API Routes
 
@@ -222,9 +220,9 @@ in pages > api > products.js:
 // GET http://localhost:3000/api/products
 
 async function handler(req, res) {
-const response = await fetch('http://localhost:1337/products');
-const products = response.json();
-res.status(200).json(products);
+  const response = await fetch('http://localhost:1337/products');
+  const products = response.json();
+  res.status(200).json(products);
 }
 
 export default handler;
@@ -261,7 +259,7 @@ P.S. : `httpOnly` cookie can not be read from client side, so requests using thi
 res.setHeaders('Set-Cookie', cookie.serialize('jwt', jwt, {
     path: '/',
     httpOnly: true,
-    maxAge: 3 _ 24 _ 3600 \* 1000, // milliseconds. ex: 3 days
+    maxAge: 3 * 24 * 3600 * 1000, // milliseconds. ex: 3 days
     expires: new Date(0) // 1 Jan 1970
   })
 ).json({});
@@ -303,14 +301,14 @@ in some page:
 import { useQuery } from 'react-query';
 
 const query = useQuery('user', async () => {
-// await fetch api
-// return data
-// or return promise (without async/await)
-}, {
-staleTime: 30000 // milliseconds. default: 0. cache is valid for 30 seconds & expire after that
-cacheTime: Infinity // milliseconds. tells when to remove cache to free up memory. ex: will cache value=undefined forever and not make additional request
-refetchOnWindowFocus: true // default: true
-});
+  // await fetch api
+  // return data
+  // or return promise (without async/await)
+  }, {
+    staleTime: 30000 // milliseconds. default: 0. cache is valid for 30 seconds & expire after that
+    cacheTime: Infinity // milliseconds. tells when to remove cache to free up memory. ex: will cache value=undefined forever and not make additional request
+    refetchOnWindowFocus: true // default: true
+  });
 
 return query.data;
 ```
@@ -321,13 +319,13 @@ in custom hook:
 
 import { useMutation } from 'react-query';
 const mutation = useMutation((payload) => {
-// fetch api
-// return promise
+  // fetch api
+  // return promise
 });
 
 return async() {
-await mutation.mutateAsync(payload);
-// optimistic update (optional)
+  await mutation.mutateAsync(payload);
+  // optimistic update (optional)
 }
 
 ```
@@ -348,15 +346,15 @@ queryClient.setQueryData('cartItems', (old) =>
 
 ```
 queryClient.setQueryData('cartItems', (old) => {
-const findIndex = old.findIndex((item) => item.id === itemId);
-return [
-...old.slice(0, findIndex),
-{
-...old[findIndex],
-quantity,
-},
-...old.slice(findIndex + 1),
-];
+  const findIndex = old.findIndex((item) => item.id === itemId);
+  return [
+    ...old.slice(0, findIndex),
+    {
+      ...old[findIndex],
+      quantity,
+    },
+    ...old.slice(findIndex + 1),
+  ];
 });
 ```
 
@@ -364,6 +362,6 @@ quantity,
 
 ```
 queryClient.setQueryData('cartItems', (old) =>
-old.filter((item) => item.id !== itemId)
+  old.filter((item) => item.id !== itemId)
 );
 ```
