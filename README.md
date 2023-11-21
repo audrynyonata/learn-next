@@ -49,7 +49,7 @@ in DevTools > Network Tab (filter: Doc):
 | Doc contains body + scripts | Doc contains empty html |
 | Pre-render in server + Client-render (ReactDOM.hydrate) | Client-render only (ReactDOM.render) |
 | Button functionality does not work when js is disabled, client-side navigation will fallback to traditional browser navigation (every Next/Link has &lt;a&gt; under the hood) | Whole site does not work when js is disabled |
-| Build: - compile and bundle JavaScript code <br> - generate static HTML pages <br> - generate json data of props for client-side navigation| Build: compile and bundle JavaScript code|
+| Build: - compile and bundle JavaScript code <br> - generate static HTML pages <br> - SSG: use getStaticProps <br> - SSG: generate json of page props for client-side navigation | Build: compile and bundle JavaScript code|
 | Client-side navigation: has html + json generated at build time, but only served if the route is being requested. Once all routes have been fetched, it will act as a standard SPA | SPA: Client will have entire application bundle at once |
 | import Link from Next/Link <br>`<Link href='' />` | import { Link } from react-router <br> `<Link to='' />`|
 | Benefits: Faster load pages (not waiting for js execution), Allow crawling, SEO rank |
